@@ -8,10 +8,15 @@ let panel = document.getElementById("panel");
 // The array show the elememts
 let elements = [];
 
+// Slection
+let selected = null;
+let active = null;
+
 // Come Event listeners Lie here
 addRectangleBtn.addEventListener("click", addRectangle);
 addTextbox.addEventListener("click", addTextBox);
 getImagebtn.addEventListener("click", () => { });
+document.addEventListener("click", selectItem);
 
 // Counstructors lie Below 
 class rectangle {
@@ -28,7 +33,7 @@ class rectangle {
         this.Bgcolor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
         this.borderRadius = "2px";
         this.rotationDeg = "0deg";
-        this.id = `rectangle ${elements.length}`;
+        this.id = `${elements.length}`;
         this.element = document.createElement('div');
         this.element.classList.add(...this.classes);
         this.element.style.width = this.width;
@@ -43,6 +48,14 @@ class rectangle {
 
     addElement() {
         canvas.appendChild(this.element);
+    }
+
+    select() {
+        this.element.style.border = "2px dashed lightblue";
+    }
+
+    unselect() {
+        this.element.style.border = "none";
     }
 }
 
@@ -60,7 +73,7 @@ class textBox {
         this.Bgcolor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
         this.borderRadius = "2px";
         this.rotationDeg = "0deg";
-        this.id = `textBox${elements.length}`;
+        this.id = `${elements.length}`;
         this.element = document.createElement('div');
         this.element.classList.add(...this.classes);
         this.element.style.width = this.width;
@@ -95,16 +108,16 @@ class textBox {
 
     addEvent() {
         this.inputDiv.addEventListener("keypress", (e) => {
-            if(e.key == "Enter") {
+            if (e.key == "Enter") {
                 this.value = this.inputDiv.value.trim();
                 this.inputDiv.remove();
                 this.element.innerText = this.value;
             }
         });
         document.addEventListener('click', () => {
-            if(document.activeElement.id == this.inputDiv.id) {
+            if (document.activeElement.id == this.inputDiv.id) {
                 this.focus = 1;
-            }else {
+            } else {
                 this.value = this.inputDiv.value.trim();
                 this.inputDiv.remove();
                 this.element.innerText = this.value;
@@ -127,6 +140,7 @@ function makePanelElement(ele) {
     // created the main layer
     const newEle = document.createElement('div');
     newEle.classList.add('layer');
+    newEle.id = ele.id;
 
     // Applied the name of the layer
     const name = document.createElement('span');
@@ -165,6 +179,9 @@ function makePanelElement(ele) {
     arrowButtons.appendChild(downButton);
     newEle.appendChild(arrowButtons);
 
+    //adding eventListeners 
+    newEle.addEventListener('click', panelSelection);
+
     return newEle;
 }
 
@@ -189,4 +206,43 @@ function updateElements() {
     elements.forEach(ele => {
         panel.appendChild(makePanelElement(ele))
     });
+}
+
+function selectItem(e) {
+    if (e.target.classList.contains("select")) {
+        if (selected != null) {
+            if (selected.element.id == e.target.id) {
+                // selected.unselect();
+                // selected = null;
+            } else {
+                selected = elements[parseInt(e.target.id)];
+                selected.select();
+            }
+        } else {
+            selected = elements[parseInt(e.target.id)];
+            selected.select();
+        }
+    } else {
+        if (selected != null) {
+            selected.unselect();
+        }
+        selected = null;
+    }
+}
+
+function panelSelection(e) {
+    e.stopPropagation();
+    if(selected == null) {
+        selected = elements[parseInt(e.target.id)];
+        selected.select();
+    }else {
+        if(e.target.id == selected.element.id) {
+            // selected.unselect();
+            // selected = null;
+        }else {
+            selected.unselect();
+            selected = elements[parseInt(e.target.id)];
+            selected.select();
+        }
+    }
 }
