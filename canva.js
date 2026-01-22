@@ -11,12 +11,20 @@ let elements = [];
 // Slection
 let selected = null;
 let active = null;
+let mode = null;
 
 // Come Event listeners Lie here
 addRectangleBtn.addEventListener("click", addRectangle);
 addTextbox.addEventListener("click", addTextBox);
 getImagebtn.addEventListener("click", () => { });
 document.addEventListener("click", selectItem);
+document.addEventListener("mousedown", interact);
+document.addEventListener("mouseup", interactEnd);
+document.addEventListener("mousemove", changeDom);
+
+// Some values 
+let canvasDistance = canvas.getBoundingClientRect();
+let startX, startY, mouseX, mouseY;;
 
 // Counstructors lie Below 
 class rectangle {
@@ -56,6 +64,16 @@ class rectangle {
 
     unselect() {
         this.element.style.border = "none";
+    }
+
+    move(x, y) {
+        this.element.style.left = `${x}px`;
+        this.element.style.top = `${y}px`;
+    }
+
+    endMove(x, y) {
+        this.x = x;
+        this.y = y;
     }
 }
 
@@ -132,6 +150,24 @@ class textBox {
             this.element.appendChild(this.inputDiv);
             this.inputDiv.focus()
         });
+    }
+
+    select() {
+        this.element.style.border = "2px dashed lightblue";
+    }
+
+    unselect() {
+        this.element.style.border = "none";
+    }
+    
+    move(x, y) {
+        this.element.style.left = `${x}px`;
+        this.element.style.top = `${y}px`;
+    }
+
+    endMove(x, y) {
+        this.x = x;
+        this.y = y;
     }
 }
 
@@ -232,17 +268,59 @@ function selectItem(e) {
 
 function panelSelection(e) {
     e.stopPropagation();
-    if(selected == null) {
+    if (selected == null) {
         selected = elements[parseInt(e.target.id)];
         selected.select();
-    }else {
-        if(e.target.id == selected.element.id) {
+    } else {
+        if (e.target.id == selected.element.id) {
             // selected.unselect();
             // selected = null;
-        }else {
+        } else {
             selected.unselect();
             selected = elements[parseInt(e.target.id)];
             selected.select();
+        }
+    }
+}
+
+function interact(e) {
+    if (e.target.classList.contains("select")) {
+        mode = "drag";
+        selected = elements[e.target.id];
+        selected.select();
+        startX = selected.x;
+        startY = selected.y;
+        mouseX = e.clientX - canvasDistance.left;
+        mouseY = e.clientY - canvasDistance.top;
+        console.log(startX, startY, mouseX, mouseY);
+        selected.element.style.cursor = "grabbing";
+    }
+}
+
+function interactEnd(e) {
+    
+    e.stopPropagation();
+    
+    if (mode == "drag") {
+        startX = parseInt(selected.element.style.left);
+        startY = parseInt(selected.element.style.top);
+        selected.endMove(startX, startY);
+        selected.element.style.cursor = "grab";
+        selected.unselect();
+        selected = null;
+    }
+
+    mode = null;
+}
+
+function changeDom(e) {
+    if (selected != null) {
+        if (mode == "drag") {
+            let CurrentMouseX = e.clientX - canvasDistance.left;
+            let CurrentMouseY = e.clientY - canvasDistance.top;
+
+            distanceX = startX + (mouseX);
+            selected.move(startX + (CurrentMouseX - mouseX), startY + (CurrentMouseY - mouseY));
         }
     }
 }

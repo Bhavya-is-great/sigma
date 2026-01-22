@@ -44,6 +44,7 @@ body {
     background: var(--primary-color);
     margin: 0.5rem;
     position: relative;
+    overflow: hidden;
     /* border-radius: 10px; */
 }
 
@@ -231,6 +232,7 @@ body {
 
 .rectangle {
     position: absolute;
+    cursor: grab;
 }
 
 .textBox {
@@ -242,6 +244,7 @@ body {
     font-weight: 600;
     word-break: break-all;
     overflow: auto;
+    cursor: grab;
 }
 
 .textBox::-webkit-scrollbar {
