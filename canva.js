@@ -8,27 +8,24 @@ let panel = document.getElementById("panel");
 // The array show the elememts
 let elements = [];
 
+// Come Event listeners Lie here
 addRectangleBtn.addEventListener("click", addRectangle);
-addTextbox.addEventListener("click", () => {});
-getImagebtn.addEventListener("click", () => {});
+addTextbox.addEventListener("click", addTextBox);
+getImagebtn.addEventListener("click", () => { });
 
-
-function addRectangle() {
-    let newRectangle = new rectangle();
-    newRectangle.addElement();
-    elements.push(newRectangle);
-    updateElements();
-}
-
+// Counstructors lie Below 
 class rectangle {
     constructor() {
+
+        // Creating a div
+        this.name = `rectangle ${elements.length}`
         this.type = "rectangle";
         this.x = 0;
         this.y = 0;
-        this.width = "60px";
-        this.height = "40px";
+        this.width = "200px";
+        this.height = "60px";
         this.classes = ["rectangle", "select"];
-        this.Bgcolor = `rgba(${Math.floor(Math.random()*256)}, ${Math.floor(Math.random()*256)}, ${Math.floor(Math.random()*256)})`;
+        this.Bgcolor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
         this.borderRadius = "2px";
         this.rotationDeg = "0deg";
         this.id = `rectangle ${elements.length}`;
@@ -49,13 +46,83 @@ class rectangle {
     }
 }
 
-function updateElements() {
-    panel.innerHTML = "";
-    elements.forEach(ele => {
-        panel.appendChild(makePanelElement(ele))
-    });
+class textBox {
+    constructor() {
+
+        // Creating a div
+        this.name = `textBox ${elements.length}`
+        this.type = "textBox";
+        this.x = 0;
+        this.y = 0;
+        this.width = "200px";
+        this.height = "60px";
+        this.classes = ["textBox", "select"];
+        this.Bgcolor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+        this.borderRadius = "2px";
+        this.rotationDeg = "0deg";
+        this.id = `textBox${elements.length}`;
+        this.element = document.createElement('div');
+        this.element.classList.add(...this.classes);
+        this.element.style.width = this.width;
+        this.element.style.height = this.height;
+        this.element.style.left = this.x;
+        this.element.style.top = this.y;
+        this.element.style.transform = `rotate(${this.rotationDeg})`;
+        this.element.id = this.id;
+        this.element.style.background = this.Bgcolor;
+        this.element.style.zIndex = elements.length;
+        this.value = "";
+        this.Retype();
+        this.focus = 0;
+    }
+
+    addElement() {
+        canvas.appendChild(this.element);
+    }
+
+    takeInput() {
+        this.inputDiv = document.createElement('input');
+        this.inputDiv.type = "text";
+        this.inputDiv.classList.add("inputBox");
+        this.inputDiv.id = `textBox ${elements.length}Input`;
+        this.element.appendChild(this.inputDiv);
+        this.addEvent();
+    }
+
+    focusELe() {
+        this.inputDiv.focus();
+    }
+
+    addEvent() {
+        this.inputDiv.addEventListener("keypress", (e) => {
+            if(e.key == "Enter") {
+                this.value = this.inputDiv.value.trim();
+                this.inputDiv.remove();
+                this.element.innerText = this.value;
+            }
+        });
+        document.addEventListener('click', () => {
+            if(document.activeElement.id == this.inputDiv.id) {
+                this.focus = 1;
+            }else {
+                this.value = this.inputDiv.value.trim();
+                this.inputDiv.remove();
+                this.element.innerText = this.value;
+                this.focus = 0;
+            }
+        })
+    }
+
+    Retype() {
+        this.element.addEventListener("dblclick", () => {
+            this.element.innerText = "";
+            this.element.appendChild(this.inputDiv);
+            this.inputDiv.focus()
+        });
+    }
 }
 
+// Functions lie Below
 function makePanelElement(ele) {
     // created the main layer
     const newEle = document.createElement('div');
@@ -63,7 +130,7 @@ function makePanelElement(ele) {
 
     // Applied the name of the layer
     const name = document.createElement('span');
-    name.innerText = ele.id;
+    name.innerText = ele.name;
     name.classList.add("name");
 
     // made a div to contain buttons
@@ -88,7 +155,7 @@ function makePanelElement(ele) {
     downImg.src = "./svgs/arrowup.svg";
     downImg.classList.add('downImg');
     downImg.style.transform = "rotate(180deg)";
-    
+
 
     //combinig and appending
     newEle.appendChild(name);
@@ -99,4 +166,27 @@ function makePanelElement(ele) {
     newEle.appendChild(arrowButtons);
 
     return newEle;
+}
+
+function addRectangle() {
+    const newRectangle = new rectangle();
+    newRectangle.addElement();
+    elements.push(newRectangle);
+    updateElements();
+}
+
+function addTextBox() {
+    const newTextBox = new textBox();
+    newTextBox.takeInput();
+    newTextBox.addElement();
+    elements.push(newTextBox);
+    updateElements();
+    newTextBox.focusELe();
+}
+
+function updateElements() {
+    panel.innerHTML = "";
+    elements.forEach(ele => {
+        panel.appendChild(makePanelElement(ele))
+    });
 }

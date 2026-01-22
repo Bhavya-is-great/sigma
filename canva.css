@@ -233,6 +233,26 @@ body {
     position: absolute;
 }
 
+.textBox {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    font-weight: 600;
+    word-break: break-all;
+    overflow: auto;
+}
+
+.textBox::-webkit-scrollbar {
+    display: none;
+}
+
+.textBox .inputBox {
+    outline: none;
+    background: transparent;
+    border: none;
+}
 
 
 
