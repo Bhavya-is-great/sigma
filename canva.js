@@ -22,9 +22,17 @@ document.addEventListener("mousedown", interact);
 document.addEventListener("mouseup", interactEnd);
 document.addEventListener("mousemove", changeDom);
 
-// Some values 
+// DOM Positions
 let canvasDistance = canvas.getBoundingClientRect();
-let startX, startY, mouseX, mouseY;;
+
+// Some values for drag 
+let startX, startY, mouseX, mouseY;
+
+// Some values for resize
+let restartX, restartY, Retop, ReLeft, reMouseX, reMouseY, reWidth, reHeight, reSetX, reSetY;
+
+// Some values for Rotate
+let centerX, centerY;
 
 // Counstructors lie Below 
 class rectangle {
@@ -46,24 +54,46 @@ class rectangle {
         this.element.classList.add(...this.classes);
         this.element.style.width = this.width;
         this.element.style.height = this.height;
-        this.element.style.left = this.x;
-        this.element.style.top = this.y;
-        this.element.style.transform = `rotate(${this.rotationDeg})`;
+        this.element.style.left = `${this.x}px`;
+        this.element.style.top = `${this.y}px`;
+        this.element.style.transform = `rotate(${this.rotationDeg}rad)`;
         this.element.id = this.id;
         this.element.style.background = this.Bgcolor;
         this.element.style.zIndex = elements.length;
     }
-
+    
     addElement() {
         canvas.appendChild(this.element);
     }
-
+    
     select() {
-        this.element.style.border = "2px dashed lightblue";
+        this.element.style.border = "3px dashed rgb(9, 7, 139)";
+        this.topRightBox = document.createElement('div');
+        this.topLeftBox = document.createElement('div');
+        this.bottomLeftBox = document.createElement('div');
+        this.bottomRightBox = document.createElement('div');
+        this.rotateBox = document.createElement('div');
+        this.rotateImg = document.createElement('img');
+        this.rotateImg.src = ""
+        this.topRightBox.classList.add("topRightBox");
+        this.topLeftBox.classList.add("topLeftBox");
+        this.bottomLeftBox.classList.add("bottomLeftBox");
+        this.bottomRightBox.classList.add("bottomRightBox");
+        this.roatateBox.classList.add("rotate");
+        this.element.append(this.topLeftBox);
+        this.element.append(this.topRightBox);
+        this.element.append(this.bottomLeftBox);
+        this.element.append(this.bottomRightBox);
+        this.element.append(this.rotateBox);
     }
-
+    
     unselect() {
         this.element.style.border = "none";
+        this.topLeftBox.remove();
+        this.topRightBox.remove();
+        this.bottomLeftBox.remove();
+        this.bottomRightBox.remove();
+        this.rotateBox.remove();
     }
 
     move(x, y) {
@@ -75,6 +105,14 @@ class rectangle {
         this.x = x;
         this.y = y;
     }
+    
+    resize(x, y) {
+        this.width = `${x}px`;
+        this.height = `${y}px`;
+        this.element.style.width = this.width;
+        this.element.style.height = this.height;
+    }
+
 }
 
 class textBox {
@@ -96,9 +134,9 @@ class textBox {
         this.element.classList.add(...this.classes);
         this.element.style.width = this.width;
         this.element.style.height = this.height;
-        this.element.style.left = this.x;
-        this.element.style.top = this.y;
-        this.element.style.transform = `rotate(${this.rotationDeg})`;
+        this.element.style.left = `${this.x}`;
+        this.element.style.top = `${this.y}px`;
+        this.element.style.transform = `rotate(${this.rotationDeg}rad)`;
         this.element.id = this.id;
         this.element.style.background = this.Bgcolor;
         this.element.style.zIndex = elements.length;
@@ -129,45 +167,80 @@ class textBox {
             if (e.key == "Enter") {
                 this.value = this.inputDiv.value.trim();
                 this.inputDiv.remove();
-                this.element.innerText = this.value;
+                this.setText();
             }
         });
         document.addEventListener('click', () => {
             if (document.activeElement.id == this.inputDiv.id) {
                 this.focus = 1;
             } else {
-                this.value = this.inputDiv.value.trim();
-                this.inputDiv.remove();
-                this.element.innerText = this.value;
-                this.focus = 0;
+                if (this.inputDiv.isConnected) {
+                    this.value = this.inputDiv.value.trim();
+                    this.inputDiv.remove();
+                    this.setText()
+                    this.focus = 0;
+                }
             }
-        })
+        });
+    }
+
+    setText() {
+        this.textTag = document.createElement('p');
+        this.textTag.innerText = this.value;
+        this.element.appendChild(this.textTag)
     }
 
     Retype() {
         this.element.addEventListener("dblclick", () => {
-            this.element.innerText = "";
+            this.textTag.remove();
             this.element.appendChild(this.inputDiv);
             this.inputDiv.focus()
         });
     }
 
     select() {
-        this.element.style.border = "2px dashed lightblue";
+        this.element.style.border = "3px dashed rgb(9, 7, 139)";
+        this.topRightBox = document.createElement('div');
+        this.topLeftBox = document.createElement('div');
+        this.bottomLeftBox = document.createElement('div');
+        this.bottomRightBox = document.createElement('div');
+        this.rotateBox = document.createElement('div');
+        this.topRightBox.classList.add("topRightBox");
+        this.topLeftBox.classList.add("topLeftBox");
+        this.bottomLeftBox.classList.add("bottomLeftBox");
+        this.bottomRightBox.classList.add("bottomRightBox");
+        this.rotateBox.classList.add("rotate");
+        this.element.append(this.topLeftBox);
+        this.element.append(this.topRightBox);
+        this.element.append(this.bottomLeftBox);
+        this.element.append(this.bottomRightBox);
+        this.element.append(this.rotateBox);
     }
-
+    
     unselect() {
         this.element.style.border = "none";
+        this.topLeftBox.remove();
+        this.topRightBox.remove();
+        this.bottomLeftBox.remove();
+        this.bottomRightBox.remove();
+        this.rotateBox.remove();
     }
     
     move(x, y) {
         this.element.style.left = `${x}px`;
         this.element.style.top = `${y}px`;
     }
-
+    
     endMove(x, y) {
         this.x = x;
         this.y = y;
+    }
+    
+    resize(x, y) {
+        this.width = `${x}px`;
+        this.height = `${y}px`;
+        this.element.style.width = this.width;
+        this.element.style.height = this.height;
     }
 }
 
@@ -245,19 +318,22 @@ function updateElements() {
 }
 
 function selectItem(e) {
-    if (e.target.classList.contains("select")) {
-        if (selected != null) {
-            if (selected.element.id == e.target.id) {
-                // selected.unselect();
-                // selected = null;
+    if (e.target.closest(".select")) {
+        if (!(e.target.classList.contains("topLeftBox")) && !(e.target.classList.contains("topRightBox")) && !(e.target.classList.contains("bottomLeftBox")) && !(e.target.classList.contains("bottomRightBox"))) {
+            if (selected != null) {
+                if (selected.element.id == e.target.id) {
+                    // selected.unselect();
+                    // selected = null;
+                } else {
+                    selected = elements[parseInt(e.target.id)];
+                    selected.select();
+                }
             } else {
                 selected = elements[parseInt(e.target.id)];
                 selected.select();
             }
-        } else {
-            selected = elements[parseInt(e.target.id)];
-            selected.select();
         }
+    } else if (e.target.classList.contains("topLeftBox")) {
     } else {
         if (selected != null) {
             selected.unselect();
@@ -286,28 +362,89 @@ function panelSelection(e) {
 function interact(e) {
     if (e.target.classList.contains("select")) {
         mode = "drag";
+        if (selected != null) {
+            selected.unselect();
+        }
         selected = elements[e.target.id];
         selected.select();
         startX = selected.x;
         startY = selected.y;
         mouseX = e.clientX - canvasDistance.left;
         mouseY = e.clientY - canvasDistance.top;
-        console.log(startX, startY, mouseX, mouseY);
         selected.element.style.cursor = "grabbing";
+    } else if (e.target.classList.contains("topLeftBox")) {
+        mode = "resize";
+        Retop = true;
+        ReLeft = true;
+        restartX = selected.x;
+        restartY = selected.y;
+        reMouseX = e.clientX - canvasDistance.left;
+        reMouseY = e.clientY - canvasDistance.top;
+        reWidth = parseInt(selected.element.style.width);
+        reHeight = parseInt(selected.element.style.height);
+    } else if (e.target.classList.contains("topRightBox")) {
+        mode = "resize";
+        Retop = true;
+        ReLeft = false;
+        restartX = selected.x;
+        restartY = selected.y;
+        reMouseX = e.clientX - canvasDistance.left;
+        reMouseY = e.clientY - canvasDistance.top;
+        reWidth = parseInt(selected.element.style.width);
+        reHeight = parseInt(selected.element.style.height);
+    } else if (e.target.classList.contains("bottomLeftBox")) {
+        mode = "resize";
+        Retop = false;
+        ReLeft = true;
+        restartX = selected.x;
+        restartY = selected.y;
+        reMouseX = e.clientX - canvasDistance.left;
+        reMouseY = e.clientY - canvasDistance.top;
+        reWidth = parseInt(selected.element.style.width);
+        reHeight = parseInt(selected.element.style.height);
+    } else if (e.target.classList.contains("bottomRightBox")) {
+        mode = "resize";
+        Retop = false;
+        ReLeft = false;
+        restartX = selected.x;
+        restartY = selected.y;
+        reMouseX = e.clientX - canvasDistance.left;
+        reMouseY = e.clientY - canvasDistance.top;
+        reWidth = parseInt(selected.element.style.width);
+        reHeight = parseInt(selected.element.style.height);
+    } else if (e.target.classList.contains('rotate')) {
     }
 }
 
 function interactEnd(e) {
-    
+
     e.stopPropagation();
-    
+
     if (mode == "drag") {
         startX = parseInt(selected.element.style.left);
         startY = parseInt(selected.element.style.top);
         selected.endMove(startX, startY);
         selected.element.style.cursor = "grab";
-        selected.unselect();
-        selected = null;
+
+        // As the mousedown and mouseup count as a click so on drag end the element was in select state only so 200 ms to unset it 
+        // setTimeout(() => {
+        //     selected.unselect();
+        //     selected = null;
+        // }, 200);
+    } else if (mode == "resize") {
+        if (ReLeft && Retop) {
+            restartX = parseInt(selected.element.style.left);
+            restartY = parseInt(selected.element.style.top);
+            selected.endMove(restartX, restartY);
+        } else if (Retop && !ReLeft) {
+            restartX = parseInt(selected.element.style.left);
+            restartY = parseInt(selected.element.style.top);
+            selected.endMove(restartX, restartY);
+        } else if (!Retop && ReLeft) {
+            restartX = parseInt(selected.element.style.left);
+            restartY = parseInt(selected.element.style.top);
+            selected.endMove(restartX, restartY);
+        }
     }
 
     mode = null;
@@ -319,8 +456,58 @@ function changeDom(e) {
             let CurrentMouseX = e.clientX - canvasDistance.left;
             let CurrentMouseY = e.clientY - canvasDistance.top;
 
-            distanceX = startX + (mouseX);
             selected.move(startX + (CurrentMouseX - mouseX), startY + (CurrentMouseY - mouseY));
+        }
+
+        if (mode == "resize") {
+            if (Retop && ReLeft) {
+                let CurrentMouseX = e.clientX - canvasDistance.left;
+                let CurrentMouseY = e.clientY - canvasDistance.top;
+
+                if (reWidth + (reMouseX - CurrentMouseX) == 40) {
+                    reSetX = restartX + (CurrentMouseX - reMouseX);
+                }
+
+                if ((reHeight + (reMouseY - CurrentMouseY)) == 40) {
+                    reSetY = restartY + (CurrentMouseY - reMouseY)
+                }
+
+                selected.resize(Math.max(40, reWidth + (reMouseX - CurrentMouseX)), Math.max(40, reHeight + (reMouseY - CurrentMouseY)));
+
+                if ((reWidth + (reMouseX - CurrentMouseX)) < 40 && (reHeight + (reMouseY - CurrentMouseY)) < 40) {
+                    selected.move(reSetX, reSetY);
+                } else if ((reWidth + (reMouseX - CurrentMouseX)) < 40) {
+                    selected.move(reSetX, restartY + (CurrentMouseY - reMouseY));
+                } else if ((reHeight + (reMouseY - CurrentMouseY)) < 40) {
+                    selected.move(restartX + (CurrentMouseX - reMouseX), reSetY);
+                } else {
+                    selected.move(restartX + (CurrentMouseX - reMouseX), restartY + (CurrentMouseY - reMouseY));
+                }
+            } else if (Retop && !ReLeft) {
+                let CurrentMouseX = e.clientX - canvasDistance.left;
+                let CurrentMouseY = e.clientY - canvasDistance.top;
+
+                selected.resize(Math.max(40, reWidth + (CurrentMouseX - reMouseX)), Math.max(40, reHeight + (reMouseY - CurrentMouseY)));
+                if ((reHeight + (reMouseY - CurrentMouseY)) > 40) {
+                    selected.move(restartX, restartY + (CurrentMouseY - reMouseY));
+                }
+            } else if (!Retop && ReLeft) {
+                let CurrentMouseX = e.clientX - canvasDistance.left;
+                let CurrentMouseY = e.clientY - canvasDistance.top;
+
+                selected.resize(Math.max(40, reWidth + (reMouseX - CurrentMouseX)), Math.max(40, reHeight + (CurrentMouseY - reMouseY)));
+                if ((reWidth + (reMouseX - CurrentMouseX)) > 40) {
+                    selected.move(restartX + (CurrentMouseX - reMouseX), restartY);
+                }
+            } else if (!Retop && !ReLeft) {
+                let CurrentMouseX = e.clientX - canvasDistance.left;
+                let CurrentMouseY = e.clientY - canvasDistance.top;
+
+                selected.resize(Math.max(40, reWidth + (CurrentMouseX - reMouseX)), Math.max(40, reHeight + (CurrentMouseY - reMouseY)));
+            }
+        }
+
+        if(mode == "rotate") {
         }
     }
 }

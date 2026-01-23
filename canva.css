@@ -243,8 +243,29 @@ body {
     color: black;
     font-weight: 600;
     word-break: break-all;
-    overflow: auto;
     cursor: grab;
+}
+
+.textBox p{
+    width: 90%;
+    height: 90%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.textBox p::-webkit-scrollbar {
+    display: none;
+}
+
+.textBox P::-webkit-scrollbar-thumb {
+    background: var(--hover-color2);
+}
+
+.textBox .inputBox,
+.textBox p {
+    pointer-events: none;
 }
 
 .textBox::-webkit-scrollbar {
@@ -257,7 +278,49 @@ body {
     border: none;
 }
 
+.topLeftBox {
+    background: rgb(9, 7, 139);
+    width: 5px;
+    height: 10px;
+    position: absolute;
+    top: -6px;
+    left: -2px;
+    transform: rotate(-30deg);
+    cursor: nw-resize;
+}
 
+.topRightBox {
+    background: rgb(9, 7, 139);
+    width: 5px;
+    height: 10px;
+    position: absolute;
+    top: -6px;
+    right: -2px;
+    transform: rotate(30deg);
+    cursor: ne-resize;
+}
+
+.bottomLeftBox {
+    background: rgb(9, 7, 139);
+    width: 5px;
+    height: 10px;
+    position: absolute;
+    bottom: -6px;
+    left: -2px;
+    transform: rotate(30deg);
+    cursor: sw-resize;
+}
+
+.bottomRightBox {
+    background: rgb(9, 7, 139);
+    width: 5px;
+    height: 10px;
+    position: absolute;
+    bottom: -6px;
+    right: -2px;
+    transform: rotate(-30deg);
+    cursor: se-resize;
+}
 
 
 
