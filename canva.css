@@ -43,28 +43,65 @@ body {
     grid-area: canvas;
     background: var(--primary-color);
     margin: 0.5rem;
+    margin-bottom: 1rem;
     position: relative;
     overflow: hidden;
+    height: 82vh;
     /* border-radius: 10px; */
 }
 
 .options {
-    display: grid;
     height: 2rem;
-    grid-template-areas: "empty edit edit edit";
-    width: 100vw;
+    /* display: grid; */
+    /* grid-template-columns: 20rem auto; */
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    grid-template-rows: 1fr;
+    grid-column-gap: 0.5rem;
+    grid-row-gap: 0rem;
+    width: 100%;
 }
 
 .empty {
     grid-area: empty;
+    height: 100%;
+    width: 100%;
 }
 
 .edit {
+    box-sizing: border-box;
     grid-area: edit;
     background: var(--hover-color);
-    margin-left: 8rem;
-    margin-right: 0.5rem;
+    /* margin-left: 8rem; */
+    /* margin-right: 0.8rem; */
     border-radius: 10px;
+    padding: 0.05rem 0.8rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    gap: 2rem;
+    grid-area: 1 / 2;
+}
+
+.editChild {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+}
+
+.edit input {
+    width: 3rem;
+    height: 1.5rem;
+}
+
+@media screen and (max-width: 390px) {
+    .edit p {
+        font-size: 0.6rem;
+    }
 }
 
 .sidebarBtn {
@@ -98,7 +135,7 @@ body {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.5rem;
     /* position: relative; */
 }
 
@@ -134,6 +171,7 @@ body {
     border-radius: 10px;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
+    border: 1px solid transparent;
 }
 
 .layer .name {
@@ -149,7 +187,7 @@ body {
     padding-right: 0.5rem;
 }
 
-.layers .arrowBtn .upBtn{
+.layers .arrowBtn .upBtn {
     border: 2px solid var(--hover-color2);
     outline: none;
     aspect-ratio: 1 / 1;
@@ -168,7 +206,7 @@ body {
     height: auto;
 }
 
-.layers .arrowBtn .downBtn{
+.layers .arrowBtn .downBtn {
     border: 2px solid var(--hover-color2);
     outline: none;
     aspect-ratio: 1 / 1;
@@ -215,7 +253,10 @@ body {
     }
 
     .options {
-        grid-template-areas: "edit";
+        /* grid-template-areas: "edit"; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .empty {
@@ -233,6 +274,7 @@ body {
 .rectangle {
     position: absolute;
     cursor: grab;
+    transform-origin: center;
 }
 
 .textBox {
@@ -244,9 +286,10 @@ body {
     font-weight: 600;
     word-break: break-all;
     cursor: grab;
+    transform-origin: center center;
 }
 
-.textBox p{
+.textBox p {
     width: 90%;
     height: 90%;
     overflow: hidden;
@@ -322,6 +365,29 @@ body {
     cursor: se-resize;
 }
 
+.rotate {
+    width: 15px;
+    height: auto;
+    position: absolute;
+    top: -1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.rotate svg {
+    width: 15px;
+    height: auto;
+}
+
+.selected {
+    border: 1px dashed blue;
+}
+
+/* .rotateImg {
+    width: 15px;
+    height: auto;
+}
+ */
 
 
 
@@ -341,7 +407,7 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100vw;
+    width: 100%;
     position: sticky;
     top: 0;
     left: 0;
