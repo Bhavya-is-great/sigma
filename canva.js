@@ -972,6 +972,16 @@ function changeDom(e) {
         }
 
         if (mode == "resize") {
+
+            if (
+                e.clientX < canvasDistance.left ||
+                e.clientX > canvasDistance.right ||
+                e.clientY < canvasDistance.top ||
+                e.clientY > canvasDistance.bottom
+            ) {
+                return;
+            }
+
             if (Retop && ReLeft) {
                 let CurrentMouseX = e.clientX - canvasDistance.left;
                 let CurrentMouseY = e.clientY - canvasDistance.top;
