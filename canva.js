@@ -474,15 +474,21 @@ class textBox {
         // Long Press code
         let pressTimer = null;
 
-        this.element.addEventListener("pointerdown", () => {
+        this.element.addEventListener("pointerdown", (e) => {
             if (!isMobile) return;
 
-            pressTimer = setTimeout(() => {
-                this.textTag.remove();
-                this.inputDiv.value = this.value;
-                this.element.appendChild(this.inputDiv);
-                this.inputDiv.focus();
-            }, 500);
+            this.isDragging = false;
+            this.startPressX = e.clientX;
+            this.startPressY = e.clientY;
+
+            this.pressTimer = setTimeout(() => {
+                if (!this.isDragging) {
+                    this.textTag.remove();
+                    this.inputDiv.value = this.value;
+                    this.element.appendChild(this.inputDiv);
+                    this.inputDiv.focus();
+                }
+            }, 1000);
         });
 
         this.element.addEventListener("pointerup", () => {
