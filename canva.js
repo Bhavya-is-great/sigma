@@ -5,7 +5,10 @@ let addTextbox = document.getElementById("addTextbox");
 let getHtmlbtn = document.getElementById("getHtml");
 let getJSONbtn = document.getElementById("getJSON");
 let panel = document.getElementById("panel");
+let layers = document.getElementById("layers");
+let btns = document.getElementById("btns");
 let editPanel = document.getElementById("edit");
+let Hamburger = document.getElementById("hamburger");
 
 // The array show the elememts
 let elements = [];
@@ -34,7 +37,8 @@ document.addEventListener("pointerup", (e) => {
     interactEnd(e);
 });
 document.addEventListener("pointermove", changeDom);
-window.addEventListener("keydown", alterDom)
+window.addEventListener("keydown", alterDom);
+Hamburger.addEventListener("click", openSidebar);
 
 // DOM Positions
 let canvasDistance = canvas.getBoundingClientRect();
@@ -198,6 +202,11 @@ class rectangle {
 
         this.radiusElement.addEventListener("input", (e) => {
             this.debouncedUpdateRadius(e);
+        });
+
+        this.deleteBtn.addEventListener("click", () => {
+            DeleteEle();
+            save();
         });
 
     }
@@ -509,7 +518,7 @@ class textBox {
             const dx = Math.abs(e.clientX - startX);
             const dy = Math.abs(e.clientY - startY);
 
-            // if finger moves → cancel edit
+            // Prevents if finger move give a little index here for ease
             if (dx > 5 || dy > 5) {
                 clearTimeout(pressTimer);
                 pressTimer = null;
@@ -593,6 +602,11 @@ class textBox {
 
         this.radiusElement.addEventListener("input", (e) => {
             this.debouncedUpdateRadius(e);
+        });
+
+        this.deleteBtn.addEventListener("click", () => {
+            DeleteEle();
+            save();
         });
 
     }
@@ -1102,6 +1116,12 @@ function restoreSelectionById(oldId) {
 
     selected = newSelected;
     selected.select();
+}
+
+function openSidebar() {
+    layers.classList.toggle("open");
+    btns.classList.toggle("open");
+    Hamburger.classList.toggle("open");
 }
 
 //taken from stack overflow
