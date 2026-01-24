@@ -30,7 +30,7 @@ nav{
     background: var(--secondary-color);
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
     z-index: 99;
-    height: 3rem;
+    height: 4rem;
 }
 
 .logo{
@@ -40,12 +40,12 @@ nav{
 }
 
 .logoImg {
-    width: 2rem;
+    width: 3.5rem;
     height: auto;
 }
 
 .brand{
-    font-size: 0.9rem;
+    font-size: 2rem;
 }
 
 .items {
@@ -58,7 +58,7 @@ nav{
 }
 
 .item a {
-    font-size: 0.75rem;
+    font-size: 1.5rem;
     text-decoration: none;
     color: var(--primary-color);
 }
@@ -94,7 +94,7 @@ nav{
     transform: translateY(-5px) rotate(-45deg);
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 600px) {
     .items {
         position: fixed;
         right: -150%;
@@ -139,7 +139,7 @@ nav{
 }
 
 .content h1 {
-    font-size: 4rem;
+    font-size: 5rem;
 }
 
 .content a {
@@ -149,11 +149,17 @@ nav{
     padding: 0.5rem 0.75rem;
     border-radius: 5px;
     transition: all 0.3s ease;
+    margin-top: 0.8rem;
+    font-size: 1.5rem;
 }
 
 .content a:hover {
     background: var(--hover-color);
     transform: translateY(-2px);
+}
+
+.content p {
+    font-size: 1.5rem;
 }
 
 .videoCont {
@@ -200,19 +206,19 @@ nav{
 }
 
 .heading {
-    font-size: 3rem;
+    font-size: 4rem;
     text-align: center;
 }
 
 .impList {
-    font-size: 0.9rem;
+    font-size: 1.5rem;
     list-style-type: circle;
     padding: 1.5rem;
     padding-top: 0.3rem;
 }
 
 .detail {
-    font-size: 0.9rem;
+    font-size: 1.5rem;
     padding: 1.5rem;
     padding-bottom: 0.3rem;
 }
@@ -221,5 +227,5 @@ nav{
     text-align: center;
     background: var(--hover-color);
     padding: 0.25rem;
-    font-size: 0.8rem;
+    font-size: 2rem;
 }

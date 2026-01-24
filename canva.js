@@ -14,6 +14,10 @@ let elements = [];
 let selected = null;
 let idCounter = 0;
 let mode = null;
+let isPointerActive = false;
+
+// POinter to detect long press in mobile
+const isMobile = window.matchMedia("(pointer: coarse)").matches;
 
 // Come Event listeners Lie here
 addRectangleBtn.addEventListener("click", addRectangle);
@@ -21,9 +25,15 @@ addTextbox.addEventListener("click", addTextBox);
 getHtmlbtn.addEventListener("click", exportHtml);
 getJSONbtn.addEventListener("click", exportJSON);
 document.addEventListener("click", selectItem);
-document.addEventListener("mousedown", interact);
-document.addEventListener("mouseup", interactEnd);
-document.addEventListener("mousemove", changeDom);
+document.addEventListener("pointerdown", (e) => {
+    isPointerActive = true;
+    interact(e);
+});
+document.addEventListener("pointerup", (e) => {
+    isPointerActive = false;
+    interactEnd(e);
+});
+document.addEventListener("pointermove", changeDom);
 window.addEventListener("keydown", alterDom)
 
 // DOM Positions
@@ -450,12 +460,40 @@ class textBox {
     }
 
     Retype() {
+
+        //As dblClick not worked on mobile so 2 logics are added one for mobile and another for the desktop where the Desktop have dblclick and mobile Long press
+
         this.element.addEventListener("dblclick", () => {
+            if (isMobile) return;
             this.textTag.remove();
             this.inputDiv.value = this.value;
             this.element.appendChild(this.inputDiv);
-            this.inputDiv.focus()
+            this.inputDiv.focus();
         });
+
+        // Long Press code
+        let pressTimer = null;
+
+        this.element.addEventListener("pointerdown", () => {
+            if (!isMobile) return;
+
+            pressTimer = setTimeout(() => {
+                this.textTag.remove();
+                this.inputDiv.value = this.value;
+                this.element.appendChild(this.inputDiv);
+                this.inputDiv.focus();
+            }, 500);
+        });
+
+        this.element.addEventListener("pointerup", () => {
+            clearTimeout(pressTimer);
+        });
+
+        this.element.addEventListener("pointerleave", () => {
+            clearTimeout(pressTimer);
+        });
+
+        // The long press logic is something related to debounce i had made it like press and hold if the timeout complete you will be allowed to edit 
     }
 
     select() {
@@ -755,6 +793,12 @@ function unhighlight(id) {
 }
 
 function interact(e) {
+
+    // The God Stack overflow Even AI is noob and was not able me to help with this project
+    if (e.target.releasePointerCapture) {
+        e.target.setPointerCapture(e.pointerId);
+    }
+
     if (e.target.classList.contains("select")) {
         mode = "drag";
         if (selected != null) {
@@ -819,6 +863,10 @@ function interact(e) {
 
 function interactEnd(e) {
 
+    if (e.target.releasePointerCapture) {
+        e.target.releasePointerCapture(e.pointerId);
+    }
+
     e.stopPropagation();
 
     if (mode == "drag") {
@@ -852,6 +900,7 @@ function interactEnd(e) {
 }
 
 function changeDom(e) {
+    console.log(e)
     if (selected != null) {
         if (mode == "drag") {
             let CurrentMouseX = e.clientX - canvasDistance.left;
