@@ -141,6 +141,12 @@ class rectangle {
         this.radiusElement.placeholder = "Radius (%)";
         this.radiusElement.value = parseInt(this.borderRadius);
 
+        //Espically made for mobile but allowed to be kept in pc also
+        this.deleteBtn = document.createElement("button");
+        this.deleteBtn.classList.add("del");
+        this.deleteBtn.innerText = "Delete";
+
+        this.editDiv.appendChild(this.deleteBtn);
         this.editDiv.appendChild(this.radiusElement);
         this.editDiv.appendChild(this.bgChnageElement);
         this.editDiv.appendChild(this.widthElement);
@@ -444,13 +450,19 @@ class textBox {
         this.heightElement.value = parseInt(this.height);
 
         this.message = document.createElement('p');
-        this.message.innerText = "Double Click the textbox to Chnage text!";
+        this.message.innerText = "Double Click(Pc) and longPress (mobile) the textbox to Chnage text!";
 
         this.radiusElement = document.createElement('input');
         this.radiusElement.type = "number";
         this.radiusElement.placeholder = "Radius (%)";
         this.radiusElement.value = parseInt(this.borderRadius);
 
+        //Espically made for mobile but allowed to be kept in pc also
+        this.deleteBtn = document.createElement("button");
+        this.deleteBtn.classList.add("del");
+        this.deleteBtn.innerText = "Delete";
+
+        this.editDiv.appendChild(this.deleteBtn);
         this.editDiv.appendChild(this.radiusElement);
         this.editDiv.appendChild(this.bgChnageElement);
         this.editDiv.appendChild(this.widthElement);
@@ -463,6 +475,7 @@ class textBox {
 
         //As dblClick not worked on mobile so 2 logics are added one for mobile and another for the desktop where the Desktop have dblclick and mobile Long press
 
+        // Desktop
         this.element.addEventListener("dblclick", () => {
             if (isMobile) return;
             this.textTag.remove();
@@ -471,32 +484,46 @@ class textBox {
             this.inputDiv.focus();
         });
 
-        // Long Press code
+        // Mobile
         let pressTimer = null;
+        let startX = 0;
+        let startY = 0;
 
         this.element.addEventListener("pointerdown", (e) => {
             if (!isMobile) return;
 
-            this.isDragging = false;
-            this.startPressX = e.clientX;
-            this.startPressY = e.clientY;
+            startX = e.clientX;
+            startY = e.clientY;
 
-            this.pressTimer = setTimeout(() => {
-                if (!this.isDragging) {
-                    this.textTag.remove();
-                    this.inputDiv.value = this.value;
-                    this.element.appendChild(this.inputDiv);
-                    this.inputDiv.focus();
-                }
-            }, 1000);
+            pressTimer = setTimeout(() => {
+                this.textTag.remove();
+                this.inputDiv.value = this.value;
+                this.element.appendChild(this.inputDiv);
+                this.inputDiv.focus();
+            }, 700);
+        });
+
+        this.element.addEventListener("pointermove", (e) => {
+            if (!pressTimer) return;
+
+            const dx = Math.abs(e.clientX - startX);
+            const dy = Math.abs(e.clientY - startY);
+
+            // if finger moves → cancel edit
+            if (dx > 5 || dy > 5) {
+                clearTimeout(pressTimer);
+                pressTimer = null;
+            }
         });
 
         this.element.addEventListener("pointerup", () => {
             clearTimeout(pressTimer);
+            pressTimer = null;
         });
 
-        this.element.addEventListener("pointerleave", () => {
+        this.element.addEventListener("pointercancel", () => {
             clearTimeout(pressTimer);
+            pressTimer = null;
         });
 
         // The long press logic is something related to debounce i had made it like press and hold if the timeout complete you will be allowed to edit 
@@ -906,7 +933,6 @@ function interactEnd(e) {
 }
 
 function changeDom(e) {
-    console.log(e)
     if (selected != null) {
         if (mode == "drag") {
             let CurrentMouseX = e.clientX - canvasDistance.left;
@@ -993,15 +1019,7 @@ function alterDom(e) {
     if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
 
     if (e.key == "Delete") {
-        selected.unselect();
-        selected.element.remove();
-
-        const index = elements.indexOf(selected);
-        if (index > -1) elements.splice(index, 1);
-
-        selected = null;
-        reindexElements();
-        updateElements();
+        DeleteEle()
         return;
     }
 
@@ -1049,7 +1067,17 @@ function alterDom(e) {
     selected.endMove(finalX, finalY);
 }
 
+function DeleteEle() {
+    selected.unselect();
+    selected.element.remove();
 
+    const index = elements.indexOf(selected);
+    if (index > -1) elements.splice(index, 1);
+
+    selected = null;
+    reindexElements();
+    updateElements();
+}
 
 function reindexElements() {
     const maxZ = elements.length - 1;
