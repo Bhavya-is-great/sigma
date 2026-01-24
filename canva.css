@@ -349,6 +349,12 @@ body {
         width: 100%;
         flex-wrap: wrap;
     }
+    .canvas {
+        height: 70vh;
+    }
+    .main {
+        top: 8rem;
+    }
 }
 
 
